@@ -1,0 +1,151 @@
+{% extends "cv/base_cv.html" %}
+
+{% block contenido %}
+
+<style>
+    .galeria {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+        padding-bottom: 50px;
+    }
+
+    .producto-card {
+        width: 280px; /* Un poco más ancho para que quepa todo */
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        background: white;
+        transition: transform 0.2s;
+        display: flex;
+        flex-direction: column; /* Para empujar el botón al fondo */
+    }
+
+    .producto-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .producto-img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        background-color: #eee;
+        border-bottom: 1px solid #eee;
+    }
+
+    .info {
+        padding: 15px;
+        flex-grow: 1; /* Ocupa el espacio disponible */
+        display: flex;
+        flex-direction: column;
+    }
+
+    .precio {
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-top: 10px;
+        margin-bottom: 15px;
+    }
+
+    .fecha {
+        font-size: 0.8rem;
+        color: #888;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    /* ESTADOS */
+    .estado-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+    }
+
+    /* Colores según estado */
+    .producto-card.estado-Regular { border-top: 4px solid #ffc107; }
+    .estado-Regular .estado-badge { background-color: #ffc107; color: #333; }
+
+    .producto-card.estado-Bueno { border-top: 4px solid #198754; }
+    .estado-Bueno .estado-badge { background-color: #198754; color: white; }
+
+    .producto-card.estado-Excelente { border-top: 4px solid #0d6efd; }
+    .estado-Excelente .estado-badge { background-color: #0d6efd; color: white; }
+
+
+    /* BOTÓN DE CONTACTO (WhatsApp Style) */
+    .btn-contact {
+        display: block;
+        width: 100%;
+        background-color: #25D366; /* Verde WhatsApp */
+        color: white;
+        text-align: center;
+        padding: 10px 0;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+        margin-top: auto; /* Lo empuja al final de la tarjeta */
+        transition: background 0.3s;
+    }
+
+    .btn-contact:hover {
+        background-color: #128C7E;
+    }
+
+</style>
+
+<h1 style="text-align: center; margin-bottom: 10px;">🛒 Venta de Garage</h1>
+<p style="text-align: center; color: #666; margin-bottom: 30px;">
+    Artículos personales en venta. Contacta directamente si te interesa algo.
+</p>
+
+<div class="acciones" style="margin-bottom: 20px; text-align: center;">
+    <a href="{% url 'home' %}" class="btn secondary">⬅ Volver al CV</a>
+</div>
+
+<div class="galeria">
+    {% for p in productos %}
+        <div class="producto-card estado-{{ p.estadoproducto }}">
+            
+            {% if p.imagen %}
+                <img src="{{ p.imagen.url }}" alt="{{ p.nombreproducto }}" class="producto-img">
+            {% else %}
+                <div class="producto-img" style="display:flex;align-items:center;justify-content:center;color:#aaa; font-size: 3rem;">
+                    📷
+                </div>
+            {% endif %}
+
+            <div class="info">
+                <span class="fecha">📅 {{ p.fechapublicacion|date:"d M Y" }}</span>
+                
+                <div>
+                    <span class="estado-badge">{{ p.estadoproducto }}</span>
+                </div>
+
+                <h3 style="margin: 5px 0; font-size: 1.1rem;">{{ p.nombreproducto }}</h3>
+                <p style="font-size: 0.9rem; color: #555; margin-bottom: 10px;">{{ p.descripcion }}</p>
+                
+                <div class="precio">${{ p.valordelbien }}</div>
+
+                <a href="https://wa.me/593{{ perfil.telefonofijo }}?text=Hola {{ perfil.nombres }}, me interesa tu producto: {{ p.nombreproducto }}" 
+                   target="_blank" 
+                   class="btn-contact">
+                   📲 Me interesa
+                </a>
+            </div>
+        </div>
+    {% empty %}
+        <div style="text-align: center; padding: 40px;">
+            <h3>¡Todo vendido! 🎉</h3>
+            <p>No hay artículos disponibles por el momento.</p>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

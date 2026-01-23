@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>CV PDF - {{ perfil.nombres }}</title>
+<style>
+    @page {
+        size: A4;
+        margin: 0cm; /* Margen 0 para que la barra negra toque los bordes */
+    }
+
+    body {
+        font-family: 'Helvetica', 'Arial', sans-serif;
+        font-size: 12px;
+        color: #333;
+        margin: 0;
+        line-height: 1.3;
+    }
+
+    /* TABLA MAESTRA (LAYOUT) */
+    table.main-layout {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+    /* --- COLUMNA IZQUIERDA (OSCURA) --- */
+    td.left-col {
+        width: 32%; 
+        background-color: #1f2a30; 
+        color: white;
+        vertical-align: top;
+        padding: 30px 20px;
+        height: 29.7cm; /* Altura A4 fija para evitar errores */
+    }
+
+    .photo-container {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .photo {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        border: 4px solid rgba(255,255,255,0.2);
+    }
+
+    .sidebar-title {
+        color: #e74c3c; /* Rojo */
+        border-bottom: 1px solid rgba(255,255,255,0.3);
+        margin-top: 25px;
+        margin-bottom: 10px;
+        font-size: 13px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .sidebar-text {
+        color: #ecf0f1;
+        margin-bottom: 6px;
+        font-size: 11px;
+        word-wrap: break-word;
+    }
+
+    /* --- COLUMNA DERECHA (CONTENIDO) --- */
+    td.right-col {
+        width: 68%;
+        padding: 40px 35px;
+        vertical-align: top;
+        background-color: white;
+    }
+
+    /* ENCABEZADO */
+    .header-name {
+        font-size: 38px;
+        font-weight: bold;
+        color: #1f2a30;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        line-height: 0.9;
+    }
+
+    .header-desc {
+        font-size: 16px;
+        color: #7f8c8d;
+        margin-bottom: 30px;
+        font-weight: normal;
+    }
+
+    /* TÍTULOS DE SECCIÓN */
+    .section-title {
+        font-size: 15px;
+        font-weight: bold;
+        color: #1f2a30;
+        border-bottom: 2px solid #e74c3c;
+        padding-bottom: 2px;
+        margin-top: 20px;
+        margin-bottom: 15px;
+        text-transform: uppercase;
+    }
+
+    /* --- ESTILOS DE ITEMS (Vertical / Recto) --- */
+    .item-box {
+        margin-bottom: 20px;
+        page-break-inside: avoid; /* Evita que se corte a la mitad en el PDF */
+    }
+
+    /* 1. Fecha (Arriba) */
+    .pdf-date {
+        color: #e74c3c;
+        font-size: 11px;
+        font-weight: bold;
+        display: block;
+        margin-bottom: 2px;
+    }
+
+    /* 2. Título (Debajo fecha) */
+    .pdf-title {
+        font-size: 14px;
+        font-weight: bold;
+        color: #2c3e50;
+        display: block;
+        margin-bottom: 2px;
+    }
+
+    /* 3. Empresa (Debajo título) */
+    .pdf-company {
+        font-size: 12px;
+        font-weight: bold;
+        color: #666;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    /* 4. Descripción (Al final) */
+    .pdf-desc {
+        color: #444;
+        font-size: 12px;
+        text-align: justify;
+        line-height: 1.4;
+    }
+
+</style>
+</head>
+<body>
+
+<table class="main-layout">
+    <tr>
+        <td class="left-col">
+            <div class="photo-container">
+                {% if perfil.fotoperfil %}
+                    <img src="{{ perfil.fotoperfil.path }}" class="photo"> 
+                {% endif %}
+            </div>
+
+            <div class="sidebar-title">Contacto</div>
+            {% if perfil.telefonofijo %} <div class="sidebar-text">📞 {{ perfil.telefonofijo }}</div> {% endif %}
+            {% if perfil.sitioweb %} <div class="sidebar-text">🌐 {{ perfil.sitioweb }}</div> {% endif %}
+            <div class="sidebar-text">🆔 {{ perfil.numerocedula }}</div>
+            <div class="sidebar-text">📍 {{ perfil.direcciondomiciliaria }}</div>
+
+            <div class="sidebar-title">Datos Personales</div>
+            <div class="sidebar-text"><b>Nacionalidad:</b><br> {{ perfil.nacionalidad }}</div>
+            <div class="sidebar-text"><b>Estado Civil:</b><br> {{ perfil.estadocivil }}</div>
+
+            <div class="sidebar-title">Reconocimientos</div>
+            {% for r in reconocimientos %}
+                <div style="margin-bottom: 10px;">
+                    <b style="color: #fff; font-size: 11px;">{{ r.tiporeconocimiento }}</b><br>
+                    <i style="color: #bdc3c7; font-size: 10px;">{{ r.descripcionreconocimiento }}</i>
+                </div>
+            {% endfor %}
+        </td>
+
+        <td class="right-col">
+            <div class="header-name">{{ perfil.nombres }}</div>
+            <div class="header-name">{{ perfil.apellidos }}</div>
+            <div class="header-desc">{{ perfil.descripcionperfil }}</div>
+
+            <div class="section-title">Experiencia Laboral</div>
+            {% for e in experiencias %}
+                <div class="item-box">
+                    <div class="pdf-date">
+                        {{ e.fechainiciogestion|date:"Y" }} - {{ e.fechafingestion|date:"Y" }}
+                    </div>
+                    <div class="pdf-title">{{ e.cargodesempenado }}</div>
+                    <div class="pdf-company">{{ e.nombrempresa }}</div>
+                    <div class="pdf-desc">{{ e.descripcionfunciones }}</div>
+                </div>
+            {% empty %}
+                <p>Sin experiencia registrada.</p>
+            {% endfor %}
+
+            <div class="section-title">Cursos Realizados</div>
+            {% for c in cursos %}
+                <div class="item-box">
+                    <div class="pdf-title">{{ c.nombrecurso }}</div>
+                    
+                    <div class="pdf-company">
+                        
+                        {% if c.totalhoras %}
+                             - {{ c.totalhoras }} Horas
+                        {% endif %}
+                    </div>
+                    
+                    <div class="pdf-desc">{{ c.descripcioncurso }}</div>
+                </div>
+            {% endfor %}
+
+            {% if productos_academicos %}
+            <div class="section-title">Productos Académicos</div>
+            {% for p in productos_academicos %}
+                <div class="item-box">
+                    <div class="pdf-date" style="color: #999;">ACADÉMICO</div>
+                    <div class="pdf-title">{{ p.nombrerecurso }}</div>
+                    <div class="pdf-desc">{{ p.descripcion }}</div>
+                </div>
+            {% endfor %}
+            {% endif %}
+
+            {% if productos_laborales %}
+            <div class="section-title">Productos Laborales</div>
+            {% for p in productos_laborales %}
+                <div class="item-box">
+                    <div class="pdf-date" style="color: #999;">
+                        {{ p.fechaproducto|date:"M Y" }}
+                    </div>
+                    <div class="pdf-title">{{ p.nombreproducto }}</div>
+                    <div class="pdf-desc">{{ p.descripcion }}</div>
+                </div>
+            {% endfor %}
+            {% endif %}
+
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

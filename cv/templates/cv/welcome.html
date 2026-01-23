@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido - {{ perfil.nombres }} {{ perfil.apellidos }}</title>
+    <style>
+        /* ESTILOS GENERALES DE LA PÁGINA */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1f2a30; /* Fondo oscuro (tu color de sidebar) */
+            height: 100vh; /* Altura completa de la ventana */
+            display: flex;
+            justify-content: center; /* Centrar horizontalmente */
+            align-items: center; /* Centrar verticalmente */
+        }
+
+        /* TARJETA DE BIENVENIDA */
+        .welcome-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f2f5 100%);
+            width: 90%;
+            max-width: 500px;
+            padding: 50px 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* FOTO */
+        .welcome-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid #1f2a30;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .welcome-photo:hover {
+            transform: scale(1.05) rotate(2deg);
+        }
+
+        /* TEXTOS */
+        h1 {
+            color: #1f2a30;
+            margin: 10px 0;
+            font-size: 2rem;
+        }
+
+        h3 {
+            color: #7f8c8d;
+            font-weight: normal;
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+
+        p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+
+        /* BOTÓN */
+        .btn-enter {
+            background-color: #e74c3c; /* Color rojo llamativo */
+            color: white;
+            padding: 15px 40px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-enter:hover {
+            background-color: #c0392b;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.6);
+        }
+
+        /* ANIMACIÓN DE ENTRADA */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="welcome-card">
+        
+        {% if perfil.fotoperfil %}
+            <img src="{{ perfil.fotoperfil.url }}" alt="Foto Perfil" class="welcome-photo">
+        {% endif %}
+
+        <h1>Hola, soy {{ perfil.nombres }}</h1>
+        <h3>{{ perfil.descripcionperfil }}</h3>
+
+        <p>
+            Bienvenido a mi Portafolio Profesional Interactivo.<br>
+            Aquí podrás conocer mi experiencia y descargar mis certificados.
+        </p>
+
+        <a href="{% url 'home' %}" class="btn-enter">
+            Ver Hoja de Vida 🚀
+        </a>
+    </div>
+
+</body>
+</html>
