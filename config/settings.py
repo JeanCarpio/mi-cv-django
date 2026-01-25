@@ -127,7 +127,7 @@ STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Esto activa la compresión y el cache de WhiteNoise
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 # Configuración de credenciales de Cloudinary
 CLOUDINARY_STORAGE = {
