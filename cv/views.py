@@ -70,9 +70,12 @@ def descargar_cv_pdf(request):
         return HttpResponse('Tuvimos errores <pre>' + html + '</pre>')
     return response
 
+# --- REEMPLAZA SOLO LA FUNCIÓN seleccionar_certificados ---
+
 def seleccionar_certificados(request):
     perfil = DatosPersonales.objects.filter(perfilactivo=1).first()
-
+    
+    # Listas
     experiencias = ExperienciaLaboral.objects.filter(perfil=perfil, certificado__isnull=False).exclude(certificado='')
     cursos = CursoRealizado.objects.filter(perfil=perfil, certificado__isnull=False).exclude(certificado='')
     reconocimientos = Reconocimiento.objects.filter(perfil=perfil, certificado__isnull=False).exclude(certificado='')
@@ -80,14 +83,18 @@ def seleccionar_certificados(request):
     if request.method == "POST":
         seleccionados = request.POST.getlist("certificados")
         
+        # Inyectamos credenciales por seguridad
+        cloudinary.config(
+            cloud_name=settings.CLOUDINARY_STORAGE['CLOUD_NAME'],
+            api_key=settings.CLOUDINARY_STORAGE['API_KEY'],
+            api_secret=settings.CLOUDINARY_STORAGE['API_SECRET']
+        )
+        
         zip_buffer = io.BytesIO()
         
         with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
             archivos_agregados = 0
-            
-            headers_fake = {
-                'User-Agent': 'Mozilla/5.0'
-            }
+            headers_fake = {'User-Agent': 'Mozilla/5.0'}
 
             for item in seleccionados:
                 try:
@@ -102,57 +109,39 @@ def seleccionar_certificados(request):
                         objeto = Reconocimiento.objects.filter(pk=id_obj).first()
                     
                     if objeto and objeto.certificado:
-                        # --- GENERACIÓN DE URL FIRMADA (PASE VIP) ---
-                        # Obtenemos el "public_id" (el nombre del archivo en la nube)
-                        public_id = objeto.certificado.name
-                        
-                        # Cloudinary guarda los PDFs como imágenes pero sin la extensión en el ID.
-                        # Le quitamos la extensión (.pdf) al nombre para obtener el ID puro.
-                        public_id_sin_ext = os.path.splitext(public_id)[0]
+                        # 1. Limpiamos el nombre (quitamos la extensión .pdf o .png del ID)
+                        public_id_full = objeto.certificado.name
+                        public_id_clean = os.path.splitext(public_id_full)[0]
 
-                        # Generamos la URL firmada (sign_url=True)
-                        # Esto agrega "?s=..." al final, que es la llave maestra.
+                        # 2. Pedimos una IMAGEN JPG (format="jpg")
+                        # Esto convierte PDFs a imagen y normaliza todo.
                         file_url, options = cloudinary.utils.cloudinary_url(
-                            public_id_sin_ext,
-                            resource_type="image", # Cloudinary trata los PDFs como imágenes por defecto
-                            format="pdf",          # Forzamos que nos devuelva el PDF original
-                            sign_url=True,         # ¡ESTA ES LA CLAVE PARA EL ERROR 401!
+                            public_id_clean,
+                            resource_type="image", 
+                            format="jpg",  # <--- FORZAMOS JPG
+                            sign_url=True,
                             secure=True
                         )
 
-                        # Descargamos usando la URL firmada
+                        # 3. Descargamos
                         response = requests.get(file_url, headers=headers_fake)
                         
                         if response.status_code == 200:
-                            filename = f"certificado_{tipo}_{id_obj}.pdf"
+                            # Guardamos en el ZIP con extensión .jpg
+                            filename = f"certificado_{tipo}_{id_obj}.jpg"
                             zip_file.writestr(filename, response.content)
                             archivos_agregados += 1
                         else:
-                            # Plan B: Si falla como imagen, intentamos como archivo 'raw' (crudo)
-                            # A veces los archivos se guardan como raw si no son PDFs estándar.
-                            file_url_raw, options = cloudinary.utils.cloudinary_url(
-                                public_id, # Aquí usamos el nombre completo
-                                resource_type="raw",
-                                sign_url=True,
-                                secure=True
-                            )
-                            response_raw = requests.get(file_url_raw, headers=headers_fake)
-                            
-                            if response_raw.status_code == 200:
-                                filename = f"certificado_{tipo}_{id_obj}.pdf"
-                                zip_file.writestr(filename, response_raw.content)
-                                archivos_agregados += 1
-                            else:
-                                print(f"Error descargando {file_url}: {response.status_code}")
+                            print(f"Error descargando imagen {file_url}: {response.status_code}")
 
                 except Exception as e:
                     print(f"Error procesando {item}: {e}")
 
         if archivos_agregados == 0:
-             return HttpResponse("No se pudieron descargar los archivos. Intenta volver a subir los certificados.")
+             return HttpResponse("No se pudieron descargar los archivos. Intenta recargar la página.")
 
         response = HttpResponse(zip_buffer.getvalue(), content_type='application/zip')
-        response['Content-Disposition'] = 'attachment; filename="mis_certificados.zip"'
+        response['Content-Disposition'] = 'attachment; filename="mis_certificados_imagenes.zip"'
         return response
 
     return render(request, "cv/seleccionar_certificados.html", {
