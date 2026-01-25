@@ -1,8 +1,21 @@
+import os
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.utils.timezone import now
 from datetime import timedelta
+
+# --- VALIDADOR PERSONALIZADO ---
+def validar_extension_imagen(value):
+    """
+    Valida que el archivo tenga extensión .png, .jpg o .jpeg.
+    Si es PDF u otro, lanza el error específico.
+    """
+    ext = os.path.splitext(value.name)[1]  # Obtiene la extensión (ej: .pdf)
+    valid_extensions = ['.jpg', '.jpeg', '.png']
+    
+    if not ext.lower() in valid_extensions:
+        raise ValidationError("No se acepta formatos pdf, Solo se aceptan imagenes en formato PNG Y JPG")
 
 
 class DatosPersonales(models.Model):
@@ -64,22 +77,21 @@ class ExperienciaLaboral(models.Model):
     fechafingestion = models.DateField()
     descripcionfunciones = models.CharField(max_length=100)
     activarparaqueseveaenfront = models.BooleanField(default=True)
+    
     certificado = models.FileField(
         upload_to='certificados/experiencia/',
         blank=True,
-        null=True
+        null=True,
+        validators=[validar_extension_imagen] 
     )
 
     def clean(self):
-        
         if self.fechafingestion < self.fechainiciogestion:
             raise ValidationError("La fecha fin no puede ser menor que la fecha inicio")
 
-    
         if self.fechainiciogestion > now().date():
             raise ValidationError("La fecha de inicio no puede estar en el futuro")
 
-        
         if self.fechafingestion > now().date():
             raise ValidationError("La fecha de fin no puede estar en el futuro (no puedes certificar experiencia que aún no ocurre).")
 
@@ -100,10 +112,12 @@ class Reconocimiento(models.Model):
     nombrecontactoauspicia = models.CharField(max_length=100)
     telefonocontactoauspicia = models.CharField(max_length=15)
     activarparaqueseveaenfront = models.BooleanField(default=True)
+    
     certificado = models.FileField(
         upload_to='certificados/reconocimientos/',
         blank=True,
-        null=True
+        null=True,
+        validators=[validar_extension_imagen]
     )
 
     def __str__(self):
@@ -126,10 +140,12 @@ class CursoRealizado(models.Model):
     telefonocontactoauspicia = models.CharField(max_length=60)
     emailempresapatrocinadora = models.EmailField(max_length=60)
     activarparaqueseveaenfront = models.BooleanField(default=True)
+    
     certificado = models.FileField(
         upload_to='certificados/cursos/',
         blank=True,
-        null=True
+        null=True,
+        validators=[validar_extension_imagen]
     )
 
     def __str__(self):
@@ -166,7 +182,6 @@ class ProductoLaboral(models.Model):
             raise ValidationError("La fecha del producto no puede estar en el futuro")
 
 
-
 class VentaGarage(models.Model):
     perfil = models.ForeignKey(DatosPersonales, on_delete=models.CASCADE)
     nombreproducto = models.CharField(max_length=100)
@@ -196,14 +211,9 @@ class VentaGarage(models.Model):
         return self.nombreproducto
 
     def clean(self):
-        # 1. Validar Futuro: No puedes publicar mañana
         if self.fechapublicacion > now().date():
             raise ValidationError("La fecha de publicación no puede estar en el futuro.")
 
-        # 2. Validar Pasado Excesivo: 
-        # Calculamos la fecha de hace 1 año exacto (365 días)
         fecha_limite_pasado = now().date() - timedelta(days=365)
-
-        # Si la fecha que pusiste es MENOR (más vieja) que el límite... error.
         if self.fechapublicacion < fecha_limite_pasado:
             raise ValidationError("La fecha es demasiado antigua. No se permiten publicaciones de hace más de 1 año.")
