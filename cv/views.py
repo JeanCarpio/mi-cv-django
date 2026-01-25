@@ -1,6 +1,7 @@
 import os
 import io
 import zipfile
+import requests  
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.template.loader import get_template
@@ -41,20 +42,14 @@ def get_contexto_perfil(perfil):
         ),
     }
 
-
-
 def welcome(request):
     perfil = DatosPersonales.objects.filter(perfilactivo=1).first()
     return render(request, 'cv/welcome.html', {'perfil': perfil})
-
-
-
 
 def home(request):
     perfil = DatosPersonales.objects.filter(perfilactivo=1).first()
     context = get_contexto_perfil(perfil)
     return render(request, 'cv/home.html', context)
-
 
 def descargar_cv_pdf(request):
     perfil = DatosPersonales.objects.filter(perfilactivo=1).first()
@@ -66,12 +61,13 @@ def descargar_cv_pdf(request):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="CV_{perfil.nombres}.pdf"'
 
+    # Nota: Si las imágenes del PDF no salen, necesitaremos una función link_callback aquí.
+    # Por ahora probamos así ya que arreglaste el template.
     pisa_status = pisa.CreatePDF(html, dest=response)
     
     if pisa_status.err:
         return HttpResponse('Tuvimos errores <pre>' + html + '</pre>')
     return response
-
 
 def seleccionar_certificados(request):
     perfil = DatosPersonales.objects.filter(perfilactivo=1).first()
@@ -91,13 +87,10 @@ def seleccionar_certificados(request):
             archivos_agregados = 0
             
             for item in seleccionados:
-                # El valor vendrá así: "exp_1", "cur_5", "rec_2"
-                # Separamos el tipo del ID
                 try:
                     tipo, id_obj = item.split('_') 
                     
                     objeto = None
-                    # Buscamos en el modelo correcto según el prefijo
                     if tipo == 'exp':
                         objeto = ExperienciaLaboral.objects.filter(pk=id_obj).first()
                     elif tipo == 'cur':
@@ -105,24 +98,36 @@ def seleccionar_certificados(request):
                     elif tipo == 'rec':
                         objeto = Reconocimiento.objects.filter(pk=id_obj).first()
                     
-                    # Si existe el archivo, lo agregamos al ZIP
+                    # --- AQUÍ ESTÁ LA MAGIA PARA CLOUDINARY ---
                     if objeto and objeto.certificado:
-                        file_path = objeto.certificado.path
-                        if os.path.exists(file_path):
-                            # Usamos el nombre original del archivo
-                            zip_file.write(file_path, os.path.basename(file_path))
+                        # 1. Obtenemos la URL de internet (no el path de disco)
+                        file_url = objeto.certificado.url
+                        
+                        # 2. Descargamos el archivo usando requests
+                        response = requests.get(file_url)
+                        
+                        if response.status_code == 200:
+                            # 3. Obtenemos el nombre del archivo de la URL
+                            # (Ej: de .../image/upload/v123/certificado.pdf saca "certificado.pdf")
+                            filename = file_url.split("/")[-1]
+                            
+                            # 4. Escribimos el CONTENIDO descargado al ZIP
+                            # Usamos writestr en lugar de write porque tenemos los datos en memoria
+                            zip_file.writestr(filename, response.content)
                             archivos_agregados += 1
+                        else:
+                            print(f"Error descargando {file_url}: Status {response.status_code}")
+
                 except Exception as e:
                     print(f"Error procesando item {item}: {e}")
 
         if archivos_agregados == 0:
-             return HttpResponse("No seleccionaste archivos o no se encontraron en el servidor.")
+             return HttpResponse("No se pudieron descargar los archivos seleccionados.")
 
         response = HttpResponse(zip_buffer.getvalue(), content_type='application/zip')
         response['Content-Disposition'] = 'attachment; filename="mis_certificados.zip"'
         return response
 
-    # Enviamos las 3 listas separadas al HTML
     return render(request, "cv/seleccionar_certificados.html", {
         "experiencias": experiencias,
         "cursos": cursos,
