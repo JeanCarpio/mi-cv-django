@@ -72,7 +72,7 @@ def descargar_cv_pdf(request):
 def seleccionar_certificados(request):
     perfil = DatosPersonales.objects.filter(perfilactivo=1).first()
 
-    # 1. Recuperamos las listas
+    # Recuperamos las listas
     experiencias = ExperienciaLaboral.objects.filter(perfil=perfil, certificado__isnull=False).exclude(certificado='')
     cursos = CursoRealizado.objects.filter(perfil=perfil, certificado__isnull=False).exclude(certificado='')
     reconocimientos = Reconocimiento.objects.filter(perfil=perfil, certificado__isnull=False).exclude(certificado='')
@@ -85,8 +85,7 @@ def seleccionar_certificados(request):
         with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
             archivos_agregados = 0
             
-            # --- DISFRAZ DE NAVEGADOR ---
-            # Esto evita que Cloudinary nos bloquee por ser un script
+            # Headers para parecer un navegador real
             headers_fake = {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
             }
@@ -104,25 +103,21 @@ def seleccionar_certificados(request):
                         objeto = Reconocimiento.objects.filter(pk=id_obj).first()
                     
                     if objeto and objeto.certificado:
-                        # 1. Obtenemos la URL base de Cloudinary
                         file_url = objeto.certificado.url
                         
-                        # 2. CORRECCIÓN DE EXTENSIÓN (El truco para el error 401)
-                        # Cloudinary a veces devuelve la URL sin .pdf. 
-                        # Buscamos la extensión real en el nombre del archivo guardado en BD.
-                        nombre_archivo = objeto.certificado.name  # Ej: certificados/curso.pdf
-                        ext = os.path.splitext(nombre_archivo)[1] # Ej: .pdf
+                        # --- LA CORRECCIÓN MAESTRA ---
+                        # Si la URL no termina en extensión conocida, forzamos .pdf
+                        if not file_url.lower().endswith(('.pdf', '.jpg', '.jpeg', '.png')):
+                            file_url += ".pdf"
                         
-                        # Si la URL no termina en la extensión correcta, se la pegamos
-                        if ext and not file_url.lower().endswith(ext.lower()):
-                            file_url += ext
-
-                        # 3. Descargamos usando los headers falsos
+                        # Descargamos
                         response = requests.get(file_url, headers=headers_fake)
                         
                         if response.status_code == 200:
-                            # Usamos el nombre limpio del archivo para el ZIP
-                            filename = os.path.basename(nombre_archivo)
+                            # Creamos un nombre limpio para el archivo dentro del ZIP
+                            # Usamos el ID para asegurar que sea único
+                            filename = f"certificado_{tipo}_{id_obj}.pdf"
+                            
                             zip_file.writestr(filename, response.content)
                             archivos_agregados += 1
                         else:
@@ -132,7 +127,7 @@ def seleccionar_certificados(request):
                     print(f"Error procesando item {item}: {e}")
 
         if archivos_agregados == 0:
-             return HttpResponse("No se pudieron descargar los archivos. Verifica que los certificados existan.")
+             return HttpResponse("No se pudieron descargar los archivos. Intenta volver a subir los certificados en el admin.")
 
         response = HttpResponse(zip_buffer.getvalue(), content_type='application/zip')
         response['Content-Disposition'] = 'attachment; filename="mis_certificados.zip"'
