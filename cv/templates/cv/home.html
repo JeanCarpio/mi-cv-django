@@ -144,12 +144,38 @@
     .line-company { font-size: 14px; font-weight: 600; color: #555; margin-bottom: 10px; }
     .line-desc { color: #666; font-size: 14px; line-height: 1.6; }
 
+    /* --- ESTILOS DE GARAGE (MODIFICADOS PARA BORDES DE COLOR) --- */
     .galeria { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
-    .producto-card { width: 250px; background: white; border: 1px solid #eee; border-radius: 10px; overflow: hidden; transition: transform 0.2s; }
+    
+    .producto-card { 
+        width: 250px; 
+        background: white; 
+        border: 2px solid #eee; /* Borde base un poco más grueso */
+        border-radius: 10px; 
+        overflow: hidden; 
+        transition: transform 0.2s; 
+    }
+    
     .producto-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
     .producto-img { width: 100%; height: 160px; object-fit: cover; background: #eee; }
     .info-prod { padding: 15px; }
     .btn-whatsapp { display: block; width: 100%; background: #25D366; color: white; text-align: center; padding: 8px; border-radius: 5px; text-decoration: none; font-weight: bold; margin-top: 10px; }
+
+    /* CLASES DINÁMICAS PARA EL ESTADO */
+    .producto-card.estado-Excelente,
+    .producto-card.estado-Bueno {
+        border-color: #2ecc71; /* Verde */
+        box-shadow: 0 4px 10px rgba(46, 204, 113, 0.1);
+    }
+
+    .producto-card.estado-Regular {
+        border-color: #f1c40f; /* Amarillo/Naranja */
+        box-shadow: 0 4px 10px rgba(241, 196, 15, 0.1);
+    }
+    
+    .producto-card.estado-Malo {
+        border-color: #e74c3c; /* Rojo (por si acaso) */
+    }
 
     @media (max-width: 900px) {
         .profile-card { flex-direction: column; text-align: center; padding: 30px; }
@@ -300,7 +326,7 @@
     <div class="section-container" style="background:transparent; box-shadow:none; padding:0;">
         <div class="galeria">
             {% for p in ventas %}
-                <div class="producto-card">
+                <div class="producto-card estado-{{ p.estadoproducto }}">
                     {% if p.imagen %}
                         <img src="{{ p.imagen.url }}" class="producto-img">
                     {% else %}
