@@ -3,9 +3,63 @@
 {% block contenido %}
 
 <style>
-    /* ESTILOS WEB (HOME) */
+    /* --- ESTILOS DE LAS PESTAÑAS (TABS) --- */
+    
+    /* Contenedor del menú de pestañas */
+    .tabs-nav {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
+    }
 
-    /* ENCABEZADO */
+    /* Botones de las pestañas */
+    .tab-btn {
+        background-color: transparent;
+        border: none;
+        padding: 10px 20px;
+        font-family: 'Helvetica', 'Arial', sans-serif;
+        font-size: 14px;
+        font-weight: bold;
+        color: #7f8c8d;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-radius: 20px;
+    }
+
+    .tab-btn:hover {
+        background-color: #f0f2f5;
+        color: #1f2a30;
+    }
+
+    /* Estilo para la pestaña activa */
+    .tab-btn.active {
+        background-color: #1f2a30; /* Azul oscuro */
+        color: white;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    /* --- SECCIONES DE CONTENIDO --- */
+    .tab-content {
+        display: none; /* Por defecto ocultas */
+        animation: fadeIn 0.5s ease;
+    }
+
+    /* La clase que muestra el contenido */
+    .tab-content.active {
+        display: block;
+    }
+
+    /* Animación suave */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- ESTILOS GENERALES (Que ya tenías) --- */
     .header-name {
         font-family: 'Helvetica', 'Arial', sans-serif;
         font-size: 42px; 
@@ -14,6 +68,7 @@
         text-transform: uppercase;
         line-height: 1;
         margin-bottom: 5px;
+        text-align: center; /* Centrado para el Inicio */
     }
 
     .header-desc {
@@ -22,134 +77,147 @@
         color: #7f8c8d;
         margin-bottom: 30px;
         font-weight: normal;
+        text-align: center;
     }
 
-    /* TÍTULOS DE SECCIÓN */
+    /* Estilos de bloques (Experiencia, Cursos, etc.) */
     .section-title {
         font-family: 'Helvetica', 'Arial', sans-serif;
-        font-size: 15px;
+        font-size: 18px;
         font-weight: bold;
         color: #1f2a30;
-        border-bottom: 2px solid #e74c3c;
-        padding-bottom: 2px;
-        margin-top: 30px;
-        margin-bottom: 20px;
+        border-left: 4px solid #e74c3c; /* Detalle rojo a la izquierda */
+        padding-left: 10px;
+        margin-bottom: 25px;
         text-transform: uppercase;
     }
 
-    /* --- ESTRUCTURA RECTA (VERTICAL) --- */
     .item-block {
-        margin-bottom: 25px; /* Más espacio entre bloques */
-        border-bottom: 1px solid #f0f0f0; /* Línea suave opcional */
+        margin-bottom: 25px; 
+        border-bottom: 1px solid #f0f0f0; 
         padding-bottom: 15px;
     }
     .item-block:last-child { border-bottom: none; }
 
-    /* 1. Línea de FECHA (Arriba) */
-    .line-date {
-        color: #e74c3c; /* Rojo */
-        font-weight: bold;
-        font-size: 13px;
-        margin-bottom: 5px; /* Separación con el título */
-        display: block;
-    }
-
-    /* 2. Línea de TÍTULO (Debajo de la fecha) */
-    .line-title {
-        font-size: 16px;
-        font-weight: bold;
-        color: #2c3e50;
-        margin-bottom: 3px;
-        display: block;
-    }
-
-    /* 3. Línea de EMPRESA/INSTITUCIÓN (Debajo del título) */
-    .line-company {
-        font-size: 14px;
-        font-weight: bold;
-        color: #666;
-        margin-bottom: 8px;
-        display: block;
-    }
-
-    /* 4. Línea de DESCRIPCIÓN (Al final) */
-    .line-desc {
-        color: #444;
-        font-size: 14px;
-        line-height: 1.5;
-        text-align: justify;
-        display: block;
-    }
-
-    /* Mensajes vacíos */
-    .empty-msg { color: #999; font-style: italic; font-size: 13px; }
+    .line-date { color: #e74c3c; font-weight: bold; font-size: 13px; margin-bottom: 5px; display: block; }
+    .line-title { font-size: 16px; font-weight: bold; color: #2c3e50; margin-bottom: 3px; display: block; }
+    .line-company { font-size: 14px; font-weight: bold; color: #666; margin-bottom: 8px; display: block; }
+    .line-desc { color: #444; font-size: 14px; line-height: 1.5; text-align: justify; display: block; }
+    .empty-msg { color: #999; font-style: italic; font-size: 13px; text-align: center; }
 
 </style>
 
-<div class="header-name">{{ perfil.nombres }}<br>{{ perfil.apellidos }}</div>
-<div class="header-desc">{{ perfil.descripcionperfil }}</div>
+<div class="tabs-nav">
+    <button class="tab-btn active" onclick="openTab(event, 'inicio')">Inicio</button>
+    <button class="tab-btn" onclick="openTab(event, 'experiencia')">Experiencia</button>
+    <button class="tab-btn" onclick="openTab(event, 'cursos')">Cursos</button>
+    <button class="tab-btn" onclick="openTab(event, 'academicos')">Académicos</button>
+    <button class="tab-btn" onclick="openTab(event, 'laborales')">Laborales</button>
+</div>
 
-<div class="section-title">Experiencia Laboral</div>
-{% for e in experiencias %}
-    <div class="item-block">
-        <div class="line-date">
-            {{ e.fechainiciogestion|date:"Y" }} - {{ e.fechafingestion|date:"Y" }}
+<div id="inicio" class="tab-content active">
+    <div style="padding: 40px 0;">
+        <div class="header-name">{{ perfil.nombres }}<br>{{ perfil.apellidos }}</div>
+        <div class="header-desc">{{ perfil.descripcionperfil }}</div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <p style="color: #666; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+                Bienvenido a mi hoja de vida digital. Navega por las pestañas de arriba para conocer en detalle mi trayectoria profesional, formación académica y proyectos destacados.
+            </p>
         </div>
-        <div class="line-title">{{ e.cargodesempenado }}</div>
-        <div class="line-company">{{ e.nombrempresa }}</div>
-        <div class="line-desc">{{ e.descripcionfunciones }}</div>
     </div>
-{% empty %}
-    <p class="empty-msg">Sin experiencia registrada.</p>
-{% endfor %}
+</div>
 
-<div class="section-title">Cursos Realizados</div>
-{% for c in cursos %}
-    <div class="item-block">
-        <div class="line-title">{{ c.nombrecurso }}</div>
-        
-        <div class="line-company">
-            
-            {% if c.totalhoras %}
-                <span style="font-weight: normal; color: #888; font-size: 13px;">
-                    — {{ c.totalhoras }} Horas
-                </span>
-            {% endif %}
+<div id="experiencia" class="tab-content">
+    <div class="section-title">Experiencia Laboral</div>
+    {% for e in experiencias %}
+        <div class="item-block">
+            <div class="line-date">
+                {{ e.fechainiciogestion|date:"Y" }} - {{ e.fechafingestion|date:"Y" }}
+            </div>
+            <div class="line-title">{{ e.cargodesempenado }}</div>
+            <div class="line-company">{{ e.nombrempresa }}</div>
+            <div class="line-desc">{{ e.descripcionfunciones }}</div>
         </div>
-        <div class="line-desc">{{ c.descripcioncurso }}</div>
-    </div>
-{% empty %}
-    <p class="empty-msg">No hay cursos registrados.</p>
-{% endfor %}
+    {% empty %}
+        <p class="empty-msg">Sin experiencia registrada.</p>
+    {% endfor %}
+</div>
 
-{% if productos_academicos %}
-<div class="section-title">Productos Académicos</div>
-{% for p in productos_academicos %}
-    <div class="item-block">
-        
-        <div class="line-title">{{ p.nombrerecurso }}</div>
-        
-        {% if p.clasificador %}
-            <div class="line-company">{{ p.clasificador }}</div>
-        {% endif %}
-        
-        <div class="line-desc">{{ p.descripcion }}</div>
-    </div>
-{% endfor %}
-{% endif %}
-
-{% if productos_laborales %}
-<div class="section-title">Productos Laborales</div>
-{% for p in productos_laborales %}
-    <div class="item-block">
-        <div class="line-date" style="color:#999;">
-            {{ p.fechaproducto|date:"M Y" }}
+<div id="cursos" class="tab-content">
+    <div class="section-title">Cursos Realizados</div>
+    {% for c in cursos %}
+        <div class="item-block">
+            <div class="line-title">{{ c.nombrecurso }}</div>
+            <div class="line-company">
+                {% if c.totalhoras %}
+                    <span style="font-weight: normal; color: #888; font-size: 13px;">
+                        — {{ c.totalhoras }} Horas
+                    </span>
+                {% endif %}
+            </div>
+            <div class="line-desc">{{ c.descripcioncurso }}</div>
         </div>
+    {% empty %}
+        <p class="empty-msg">No hay cursos registrados.</p>
+    {% endfor %}
+</div>
 
-        <div class="line-title">{{ p.nombreproducto }}</div>
-        <div class="line-desc">{{ p.descripcion }}</div>
-    </div>
-{% endfor %}
-{% endif %}
+<div id="academicos" class="tab-content">
+    <div class="section-title">Productos Académicos</div>
+    {% if productos_academicos %}
+        {% for p in productos_academicos %}
+            <div class="item-block">
+                <div class="line-title">{{ p.nombrerecurso }}</div>
+                {% if p.clasificador %}
+                    <div class="line-company">{{ p.clasificador }}</div>
+                {% endif %}
+                <div class="line-desc">{{ p.descripcion }}</div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="empty-msg">No hay productos académicos registrados.</p>
+    {% endif %}
+</div>
+
+<div id="laborales" class="tab-content">
+    <div class="section-title">Productos Laborales</div>
+    {% if productos_laborales %}
+        {% for p in productos_laborales %}
+            <div class="item-block">
+                <div class="line-date" style="color:#999;">
+                    {{ p.fechaproducto|date:"M Y" }}
+                </div>
+                <div class="line-title">{{ p.nombreproducto }}</div>
+                <div class="line-desc">{{ p.descripcion }}</div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="empty-msg">No hay productos laborales registrados.</p>
+    {% endif %}
+</div>
+
+<script>
+    function openTab(evt, tabName) {
+        // 1. Ocultar todos los contenidos con clase "tab-content"
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+            tabcontent[i].classList.remove("active");
+        }
+
+        // 2. Quitar la clase "active" de todos los botones
+        tablinks = document.getElementsByClassName("tab-btn");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+
+        // 3. Mostrar la pestaña actual y añadir "active" al botón que se clickeó
+        document.getElementById(tabName).style.display = "block";
+        document.getElementById(tabName).classList.add("active");
+        evt.currentTarget.className += " active";
+    }
+</script>
 
 {% endblock %}
