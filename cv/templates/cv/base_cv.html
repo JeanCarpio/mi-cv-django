@@ -10,64 +10,59 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* El color de fondo ahora lo manejará el contenedor de burbujas */
             background-color: #f0f2f5; 
             color: #333;
             font-size: 14px;
             line-height: 1.5;
-            overflow-x: hidden; /* Evita scroll horizontal por las burbujas */
+            overflow-x: hidden; 
         }
 
-        /* --- NUEVO: FONDO INTERACTIVO --- */
+        /* --- FONDO INTERACTIVO --- */
         #interactive-background {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1; /* PARA QUE SE QUEDE DETRÁS DE TODO */
-            pointer-events: none; /* Para que no bloquee los clics en el contenido */
+            z-index: -1; 
+            pointer-events: none; 
             overflow: hidden;
         }
 
-        /* Estilo de cada burbuja */
+        /* Estilo de la burbuja */
         .db-bubble {
             position: absolute;
             border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.4); /* Fondo blanco semitransparente */
+            background-color: rgba(255, 255, 255, 0.6); /* Un poco más blancas para que se noten los logos */
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 10px;
-            /* Transición suave para el efecto de empuje */
-            transition: transform 0.3s ease-out; 
+            padding: 12px; /* Un poco más de espacio interno */
+            transition: transform 0.2s ease-out; 
             will-change: transform, top, left;
         }
 
-        /* Estilo de la imagen dentro de la burbuja */
         .db-bubble img {
-            width: 70%;
-            height: 70%;
+            width: 80%;
+            height: 80%;
             object-fit: contain;
-            opacity: 0.8; /* Logos un poco transparentes para que no sean molestos */
+            opacity: 0.9; 
         }
 
-
-        /* CONTENEDOR PRINCIPAL CENTRADO */
+        /* CONTENEDOR PRINCIPAL */
         .cv-wrapper {
             width: 100%;
             max-width: 1200px; 
             margin: 0 auto;
             padding: 20px;
             min-height: 100vh;
-            position: relative; /* Necesario para estar sobre el fondo */
+            position: relative; 
             z-index: 1;
         }
 
         .main-content { width: 100%; background-color: transparent; }
 
-        /* RESPONSIVE */
         @media (max-width: 800px) { .cv-wrapper { padding: 10px; } }
     </style>
 </head>
@@ -85,44 +80,39 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const container = document.getElementById('interactive-background');
-            const numBubbles = 15; // Cantidad de burbujas (no poner demasiadas para no ralentizar)
+            const numBubbles = 15; 
             const bubbles = [];
             let mouseX = 0;
             let mouseY = 0;
 
-            // URLs de los logos (usamos versiones PNG transparentes de la web)
+            // URLs DE LOS LOGOS (Oracle corregido)
             const logos = [
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Sql_data_base_with_logo.png/1200px-Sql_data_base_with_logo.png', // SQL Genérico/Server representation
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Oracle_logo.svg/2560px-Oracle_logo.svg.png', // Oracle
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Sql_data_base_with_logo.png/1200px-Sql_data_base_with_logo.png', // SQL
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Oracle_logo.svg/512px-Oracle_logo.svg.png', // ORACLE (Versión PNG más estable)
                 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Postgresql_elephant.svg/1200px-Postgresql_elephant.svg.png', // PostgreSQL
                 'https://upload.wikimedia.org/wikipedia/labs/8/8e/Mysql_logo.png' // MySQL
             ];
 
-            // Función para obtener número aleatorio entre min y max
             function random(min, max) {
                 return Math.random() * (max - min) + min;
             }
 
-            // Clase Burbuja
             class Bubble {
                 constructor() {
                     this.element = document.createElement('div');
                     this.element.classList.add('db-bubble');
                     
-                    // Tamaño aleatorio entre 60px y 100px
-                    this.size = random(60, 100);
+                    // --- TAMAÑO CORREGIDO: Entre 70 y 85 ---
+                    this.size = random(70, 85);
                     this.element.style.width = `${this.size}px`;
                     this.element.style.height = `${this.size}px`;
 
-                    // Posición inicial aleatoria
                     this.x = random(0, window.innerWidth - this.size);
                     this.y = random(0, window.innerHeight - this.size);
                     
-                    // Velocidad aleatoria (lenta para que sea elegante)
-                    this.vx = random(-0.5, 0.5);
-                    this.vy = random(-0.5, 0.5);
+                    this.vx = random(-0.4, 0.4); // Velocidad suave
+                    this.vy = random(-0.4, 0.4);
 
-                    // Elegir logo aleatorio
                     const img = document.createElement('img');
                     img.src = logos[Math.floor(Math.random() * logos.length)];
                     this.element.appendChild(img);
@@ -131,23 +121,19 @@
                 }
 
                 update() {
-                    // Mover
                     this.x += this.vx;
                     this.y += this.vy;
 
-                    // Rebotar en los bordes de la pantalla
                     if (this.x <= 0 || this.x + this.size >= window.innerWidth) this.vx *= -1;
                     if (this.y <= 0 || this.y + this.size >= window.innerHeight) this.vy *= -1;
 
-                    // --- INTERACCIÓN CON EL MOUSE ---
-                    // Calcular distancia entre el centro de la burbuja y el mouse
+                    // Interacción Mouse
                     const centerX = this.x + this.size / 2;
                     const centerY = this.y + this.size / 2;
                     const dx = mouseX - centerX;
                     const dy = mouseY - centerY;
                     const distance = Math.sqrt(dx * dx + dy * dy);
                     
-                    // Si el mouse está cerca (menos de 150px), aplicar fuerza de repulsión
                     const interactionRadius = 150;
                     let moveX = 0;
                     let moveY = 0;
@@ -155,25 +141,20 @@
                     if (distance < interactionRadius) {
                         const force = (interactionRadius - distance) / interactionRadius;
                         const angle = Math.atan2(dy, dx);
-                        // Mover en dirección opuesta al mouse
-                        moveX = -Math.cos(angle) * force * 50; 
-                        moveY = -Math.sin(angle) * force * 50;
+                        moveX = -Math.cos(angle) * force * 60; 
+                        moveY = -Math.sin(angle) * force * 60;
                     }
 
-                    // Aplicar posición y transformación
                     this.element.style.top = `${this.y}px`;
                     this.element.style.left = `${this.x}px`;
-                    // Usamos transform para el empujón del mouse porque es más suave
                     this.element.style.transform = `translate(${moveX}px, ${moveY}px)`;
                 }
             }
 
-            // Inicializar burbujas
             for (let i = 0; i < numBubbles; i++) {
                 bubbles.push(new Bubble());
             }
 
-            // Bucle de animación
             function animate() {
                 bubbles.forEach(bubble => bubble.update());
                 requestAnimationFrame(animate);
@@ -181,13 +162,11 @@
 
             animate();
 
-            // Rastrear posición del mouse
             window.addEventListener('mousemove', (e) => {
                 mouseX = e.clientX;
                 mouseY = e.clientY;
             });
 
-            // Ajustar al cambiar tamaño de ventana
             window.addEventListener('resize', () => {
                 bubbles.forEach(b => {
                     b.x = Math.min(b.x, window.innerWidth - b.size);
