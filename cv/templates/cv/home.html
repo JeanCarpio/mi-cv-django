@@ -3,289 +3,349 @@
 {% block contenido %}
 
 <style>
-    /* --- ESTILO TIPO NAVBAR (COMO LA REFERENCIA) --- */
-    
+    /* --- BARRA DE NAVEGACIÓN SUPERIOR (OSCURA) --- */
     .tabs-nav {
-        background-color: #1f2a30; /* Fondo oscuro como la barra de navegación */
-        padding: 15px;
+        background-color: #1f2a30;
+        padding: 15px 20px;
         border-radius: 10px;
         display: flex;
-        justify-content: center;
+        justify-content: space-between; /* Separa items a los extremos */
+        align-items: center;
         flex-wrap: wrap;
         gap: 15px;
         margin-bottom: 30px;
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
+    .nav-left { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
+    
     .tab-btn {
         background-color: transparent;
         border: none;
         font-family: 'Segoe UI', sans-serif;
         font-size: 14px;
         font-weight: 600;
-        color: #bdc3c7; /* Color gris claro */
+        color: #bdc3c7;
         cursor: pointer;
         transition: all 0.3s ease;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        padding: 5px 10px;
         position: relative;
     }
 
-    /* Efecto Hover */
-    .tab-btn:hover {
-        color: white;
+    .tab-btn:hover { color: white; }
+    
+    .tab-btn.active { color: #3498db; font-weight: bold; }
+    .tab-btn.active::after {
+        content: ''; display: block; width: 100%; height: 2px;
+        background-color: #3498db; position: absolute; bottom: -5px; left: 0;
     }
 
-    /* La pestaña activa se pone blanca y brillante */
-    .tab-btn.active {
-        color: #3498db; /* Un azul brillante o blanco según prefieras */
-        font-weight: bold;
+    /* Botón destacado en el menú */
+    .btn-download-nav {
+        background-color: #3498db; color: white; padding: 8px 15px;
+        border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 13px;
+        transition: background 0.3s;
     }
-    
-    /* Línea debajo de la activa */
-    .tab-btn.active::after {
-        content: '';
-        display: block;
-        width: 100%;
-        height: 2px;
-        background-color: #3498db;
-        position: absolute;
-        bottom: -5px;
-        left: 0;
-    }
+    .btn-download-nav:hover { background-color: #2980b9; }
 
     /* --- CONTENIDO --- */
-    .tab-content {
-        display: none;
-        animation: slideUp 0.4s ease;
-    }
+    .tab-content { display: none; animation: fadeIn 0.5s ease; }
+    .tab-content.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    .tab-content.active {
-        display: block;
-    }
-
-    @keyframes slideUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* --- ESTILOS GENERALES --- */
-    .header-name {
-        font-size: 48px; 
-        font-weight: 800;
-        color: #1f2a30;
-        text-align: center;
-        margin-bottom: 10px;
-    }
-
-    .header-desc {
-        font-size: 20px;
-        color: #3498db; /* Azul para el subtítulo */
-        text-align: center;
-        margin-bottom: 40px;
-        font-weight: 500;
-    }
-
-    /* Estilos de Items (Experiencia, Cursos) */
-    .item-block {
-        background: white;
-        border-left: 5px solid #3498db;
-        padding: 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 15px rgba(0,0,0,0.05);
-        border-radius: 0 10px 10px 0;
-    }
-
-    .line-date { color: #7f8c8d; font-size: 12px; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
-    .line-title { font-size: 18px; font-weight: bold; color: #2c3e50; margin-bottom: 5px; }
-    .line-company { font-size: 14px; font-weight: 600; color: #3498db; margin-bottom: 10px; }
-    .line-desc { color: #555; font-size: 14px; line-height: 1.6; }
-
-    /* --- ESTILOS ESPECIFICOS PARA GARAGE (TARJETAS) --- */
-    .galeria {
+    /* --- TARJETA DE PERFIL--- */
+    .profile-card {
+        background-color: white;
+        border-radius: 20px;
+        padding: 50px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         display: flex;
         flex-wrap: wrap;
-        gap: 20px;
+        align-items: center;
+        gap: 40px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Decoración de fondo (puntos/lineas) */
+    .profile-card::before {
+        content: ''; position: absolute; top: 0; right: 0; width: 150px; height: 150px;
+        background: radial-gradient(circle, #3498db 10%, transparent 10.5%);
+        background-size: 20px 20px; opacity: 0.1;
+    }
+
+    /* Columna Foto */
+    .profile-photo-container {
+        flex: 0 0 auto;
+        width: 200px; height: 200px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 5px solid #f0f2f5;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .profile-photo-container img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Columna Info Central */
+    .profile-info { flex: 1; min-width: 300px; }
+    
+    .profile-name {
+        font-size: 3rem; font-weight: 800; color: #1f2a30; line-height: 1.1; margin-bottom: 10px;
+    }
+    .profile-desc {
+        font-size: 1.2rem; color: #3498db; font-weight: 500; margin-bottom: 30px;
+    }
+
+    /* Grid de Datos Personales */
+    .data-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .data-item { font-size: 0.95rem; color: #555; display: flex; align-items: center; gap: 8px; }
+    .data-item b { color: #1f2a30; }
+    .icon { color: #3498db; font-size: 1.1rem; }
+
+    /* Columna Botones (Derecha) */
+    .profile-actions {
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
         justify-content: center;
     }
 
-    .producto-card {
-        width: 250px;
-        border: 1px solid #eee;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        background: white;
-        transition: transform 0.2s;
+    .btn-big {
+        display: inline-block;
+        padding: 15px 30px;
+        background-color: #3498db;
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        border-radius: 50px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+        transition: transform 0.2s, box-shadow 0.2s;
     }
-    .producto-card:hover { transform: translateY(-5px); }
     
-    .producto-img { width: 100%; height: 160px; object-fit: cover; background: #f9f9f9; }
+    .btn-big:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(52, 152, 219, 0.6); }
+
+    .btn-secondary-action {
+        background-color: white; color: #1f2a30; border: 2px solid #f0f2f5;
+        box-shadow: none;
+    }
+    .btn-secondary-action:hover { background-color: #f0f2f5; border-color: #d1d5db; }
+
+
+    /* --- ESTILOS DE BLOQUES (Experiencia, Cursos, etc.) --- */
+    .section-container {
+        background: white; padding: 40px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    }
+
+    .item-block {
+        border-left: 4px solid #3498db; padding: 15px 20px; margin-bottom: 20px;
+        background: #f9f9f9; border-radius: 0 8px 8px 0;
+    }
     
+    .line-date { color: #e74c3c; font-weight: bold; font-size: 12px; text-transform: uppercase; margin-bottom: 5px; }
+    .line-title { font-size: 18px; font-weight: bold; color: #2c3e50; margin-bottom: 5px; }
+    .line-company { font-size: 14px; font-weight: 600; color: #555; margin-bottom: 10px; }
+    .line-desc { color: #666; font-size: 14px; line-height: 1.6; }
+
+    /* Estilos Garage */
+    .galeria { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+    .producto-card { width: 250px; background: white; border: 1px solid #eee; border-radius: 10px; overflow: hidden; transition: transform 0.2s; }
+    .producto-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+    .producto-img { width: 100%; height: 160px; object-fit: cover; background: #eee; }
     .info-prod { padding: 15px; }
-    .precio-prod { font-size: 1.2rem; font-weight: bold; color: #27ae60; margin: 10px 0; }
-    .btn-contact {
-        display: block; width: 100%; background-color: #25D366; color: white;
-        text-align: center; padding: 8px 0; border-radius: 5px; text-decoration: none; font-weight: bold;
+    .btn-whatsapp { display: block; width: 100%; background: #25D366; color: white; text-align: center; padding: 8px; border-radius: 5px; text-decoration: none; font-weight: bold; margin-top: 10px; }
+
+    /* Responsive Profile Card */
+    @media (max-width: 900px) {
+        .profile-card { flex-direction: column; text-align: center; padding: 30px; }
+        .data-grid { grid-template-columns: 1fr; text-align: left; }
+        .profile-actions { width: 100%; }
     }
 
 </style>
 
 <div class="tabs-nav">
-    <button class="tab-btn active" onclick="openTab(event, 'inicio')">Inicio</button>
-    <button class="tab-btn" onclick="openTab(event, 'experiencia')">Experiencia</button>
-    <button class="tab-btn" onclick="openTab(event, 'cursos')">Cursos</button>
-    <button class="tab-btn" onclick="openTab(event, 'reconocimientos')">Reconocimientos</button>
-    <button class="tab-btn" onclick="openTab(event, 'academicos')">Académicos</button>
-    <button class="tab-btn" onclick="openTab(event, 'laborales')">Laborales</button>
-    <button class="tab-btn" onclick="openTab(event, 'garage')">Garage 🛒</button>
+    <div class="nav-left">
+        <button class="tab-btn active" onclick="openTab(event, 'inicio')">Inicio</button>
+        <button class="tab-btn" onclick="openTab(event, 'experiencia')">Experiencia</button>
+        <button class="tab-btn" onclick="openTab(event, 'cursos')">Cursos</button>
+        <button class="tab-btn" onclick="openTab(event, 'reconocimientos')">Reconocimientos</button>
+        <button class="tab-btn" onclick="openTab(event, 'academicos')">Académicos</button>
+        <button class="tab-btn" onclick="openTab(event, 'laborales')">Laborales</button>
+        <button class="tab-btn" onclick="openTab(event, 'garage')">Garage 🛒</button>
+    </div>
+    
+    <div>
+        <a href="{% url 'cv_pdf' %}" class="btn-download-nav">📄 Descargar Hoja de Vida</a>
+    </div>
 </div>
 
 <div id="inicio" class="tab-content active">
-    <div style="padding: 20px 0; text-align: center;">
-        <div class="header-name">{{ perfil.nombres }} {{ perfil.apellidos }}</div>
-        <div class="header-desc">{{ perfil.descripcionperfil }}</div>
+    <div class="profile-card">
         
-        <p style="color: #666; max-width: 700px; margin: 0 auto; line-height: 1.8; font-size: 16px;">
-            Bienvenido a mi portafolio profesional interactivo. 
-            Utiliza la barra de navegación superior para explorar mi trayectoria, 
-            ver mis certificaciones o visitar mi tienda personal.
-        </p>
-        
-        <div style="margin-top: 40px;">
-            <button onclick="openTab(event, 'experiencia')" style="background: #3498db; color: white; border: none; padding: 12px 30px; border-radius: 50px; font-weight: bold; cursor: pointer;">
-                Ver mi Experiencia
-            </button>
+        <div class="profile-photo-container">
+            {% if perfil.fotoperfil %}
+                <img src="{{ perfil.fotoperfil.url }}" alt="Foto Perfil">
+            {% else %}
+                <div style="width:100%; height:100%; background:#ddd; display:flex; align-items:center; justify-content:center; color:#999; font-size:50px;">👤</div>
+            {% endif %}
         </div>
+
+        <div class="profile-info">
+            <div class="profile-name">{{ perfil.nombres }}<br>{{ perfil.apellidos }}</div>
+            <div class="profile-desc">{{ perfil.descripcionperfil }}</div>
+
+            <div class="data-grid">
+                <div class="data-item"><span class="icon">📧</span> <span>{{ perfil.email|default:"No registrado" }}</span></div>
+                <div class="data-item"><span class="icon">📞</span> <span>{{ perfil.telefonofijo }}</span></div>
+                <div class="data-item"><span class="icon">📍</span> <span>{{ perfil.direcciondomiciliaria }}</span></div>
+                <div class="data-item"><span class="icon">🆔</span> <span>{{ perfil.numerocedula }}</span></div>
+                <div class="data-item"><span class="icon">🚩</span> <span>{{ perfil.nacionalidad }}</span></div>
+                <div class="data-item"><span class="icon">🎂</span> <span>{{ perfil.fechanacimiento }}</span></div>
+                <div class="data-item"><span class="icon">❤</span> <span>{{ perfil.estadocivil }}</span></div>
+                {% if perfil.licenciaconducir %}
+                    <div class="data-item"><span class="icon">🚗</span> <span>Licencia: {{ perfil.licenciaconducir }}</span></div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="profile-actions">
+            <a href="{% url 'cv_pdf' %}" class="btn-big">
+                📥 Descargar Hoja de Vida
+            </a>
+            <a href="{% url 'seleccionar_certificados' %}" class="btn-big btn-secondary-action">
+                🎓 Descargar Certificados
+            </a>
+        </div>
+
     </div>
 </div>
 
 <div id="experiencia" class="tab-content">
-    <h3 style="color:#1f2a30; margin-bottom: 20px;">Trayectoria Profesional</h3>
-    {% for e in experiencias %}
-        <div class="item-block">
-            <div class="line-date">{{ e.fechainiciogestion|date:"Y" }} - {{ e.fechafingestion|date:"Y" }}</div>
-            <div class="line-title">{{ e.cargodesempenado }}</div>
-            <div class="line-company">{{ e.nombrempresa }}</div>
-            <div class="line-desc">{{ e.descripcionfunciones }}</div>
-        </div>
-    {% empty %}
-        <p style="text-align: center; color: #999;">Sin experiencia registrada.</p>
-    {% endfor %}
+    <div class="section-container">
+        <h3 style="color:#1f2a30; margin-bottom:25px; border-bottom:2px solid #eee; padding-bottom:10px;">Experiencia Laboral</h3>
+        {% for e in experiencias %}
+            <div class="item-block">
+                <div class="line-date">{{ e.fechainiciogestion|date:"Y" }} - {{ e.fechafingestion|date:"Y" }}</div>
+                <div class="line-title">{{ e.cargodesempenado }}</div>
+                <div class="line-company">{{ e.nombrempresa }}</div>
+                <div class="line-desc">{{ e.descripcionfunciones }}</div>
+            </div>
+        {% empty %}
+            <p style="text-align:center; color:#999;">Sin experiencia registrada.</p>
+        {% endfor %}
+    </div>
 </div>
 
 <div id="cursos" class="tab-content">
-    <h3 style="color:#1f2a30; margin-bottom: 20px;">Formación Continua</h3>
-    {% for c in cursos %}
-        <div class="item-block" style="border-left-color: #27ae60;">
-            <div class="line-title">{{ c.nombrecurso }}</div>
-            <div class="line-company">{{ c.entidadpatrocinadora }} {% if c.totalhoras %}({{ c.totalhoras }}h){% endif %}</div>
-            <div class="line-desc">{{ c.descripcioncurso }}</div>
-        </div>
-    {% empty %}
-        <p style="text-align: center; color: #999;">No hay cursos registrados.</p>
-    {% endfor %}
+    <div class="section-container">
+        <h3 style="color:#1f2a30; margin-bottom:25px; border-bottom:2px solid #eee; padding-bottom:10px;">Formación Continua</h3>
+        {% for c in cursos %}
+            <div class="item-block" style="border-left-color: #27ae60;">
+                <div class="line-title">{{ c.nombrecurso }}</div>
+                <div class="line-company">{{ c.entidadpatrocinadora }} {% if c.totalhoras %}({{ c.totalhoras }}h){% endif %}</div>
+                <div class="line-desc">{{ c.descripcioncurso }}</div>
+            </div>
+        {% empty %}
+            <p style="text-align:center; color:#999;">No hay cursos registrados.</p>
+        {% endfor %}
+    </div>
 </div>
 
 <div id="reconocimientos" class="tab-content">
-    <h3 style="color:#1f2a30; margin-bottom: 20px;">Logros y Reconocimientos</h3>
-    {% for r in reconocimientos %}
-        <div class="item-block" style="border-left-color: #f1c40f;">
-            <div class="line-date">{{ r.fechareconocimiento|date:"d M Y" }}</div>
-            <div class="line-title">{{ r.tiporeconocimiento }}</div>
-            <div class="line-company">{{ r.entidadpatrocinadora }}</div>
-            <div class="line-desc">{{ r.descripcionreconocimiento }}</div>
-        </div>
-    {% empty %}
-        <p style="text-align: center; color: #999;">No hay reconocimientos registrados.</p>
-    {% endfor %}
+    <div class="section-container">
+        <h3 style="color:#1f2a30; margin-bottom:25px; border-bottom:2px solid #eee; padding-bottom:10px;">Reconocimientos</h3>
+        {% for r in reconocimientos %}
+            <div class="item-block" style="border-left-color: #f1c40f;">
+                <div class="line-date">{{ r.fechareconocimiento|date:"d M Y" }}</div>
+                <div class="line-title">{{ r.tiporeconocimiento }}</div>
+                <div class="line-company">{{ r.entidadpatrocinadora }}</div>
+                <div class="line-desc">{{ r.descripcionreconocimiento }}</div>
+            </div>
+        {% empty %}
+            <p style="text-align:center; color:#999;">No hay reconocimientos registrados.</p>
+        {% endfor %}
+    </div>
 </div>
 
 <div id="academicos" class="tab-content">
-    <h3 style="color:#1f2a30; margin-bottom: 20px;">Producción Académica</h3>
-    {% for p in productos_academicos %}
-        <div class="item-block" style="border-left-color: #8e44ad;">
-            <div class="line-title">{{ p.nombrerecurso }}</div>
-            <div class="line-company">{{ p.clasificador }}</div>
-            <div class="line-desc">{{ p.descripcion }}</div>
-        </div>
-    {% empty %}
-         <p style="text-align: center; color: #999;">No hay registros.</p>
-    {% endfor %}
+    <div class="section-container">
+        <h3 style="color:#1f2a30; margin-bottom:25px; border-bottom:2px solid #eee; padding-bottom:10px;">Productos Académicos</h3>
+        {% for p in productos_academicos %}
+            <div class="item-block" style="border-left-color: #8e44ad;">
+                <div class="line-title">{{ p.nombrerecurso }}</div>
+                <div class="line-company">{{ p.clasificador }}</div>
+                <div class="line-desc">{{ p.descripcion }}</div>
+            </div>
+        {% empty %}
+            <p style="text-align:center; color:#999;">No hay registros.</p>
+        {% endfor %}
+    </div>
 </div>
 
 <div id="laborales" class="tab-content">
-    <h3 style="color:#1f2a30; margin-bottom: 20px;">Portafolio Laboral</h3>
-    {% for p in productos_laborales %}
-        <div class="item-block" style="border-left-color: #e67e22;">
-            <div class="line-date">{{ p.fechaproducto|date:"M Y" }}</div>
-            <div class="line-title">{{ p.nombreproducto }}</div>
-            <div class="line-desc">{{ p.descripcion }}</div>
-        </div>
-    {% empty %}
-         <p style="text-align: center; color: #999;">No hay registros.</p>
-    {% endfor %}
+    <div class="section-container">
+        <h3 style="color:#1f2a30; margin-bottom:25px; border-bottom:2px solid #eee; padding-bottom:10px;">Productos Laborales</h3>
+        {% for p in productos_laborales %}
+            <div class="item-block" style="border-left-color: #e67e22;">
+                <div class="line-date">{{ p.fechaproducto|date:"M Y" }}</div>
+                <div class="line-title">{{ p.nombreproducto }}</div>
+                <div class="line-desc">{{ p.descripcion }}</div>
+            </div>
+        {% empty %}
+            <p style="text-align:center; color:#999;">No hay registros.</p>
+        {% endfor %}
+    </div>
 </div>
 
 <div id="garage" class="tab-content">
-    <h3 style="color:#1f2a30; margin-bottom: 20px; text-align: center;">Venta de Garage</h3>
-    <div class="galeria">
-        {% for p in ventas %}
-            <div class="producto-card">
-                {% if p.imagen %}
-                    <img src="{{ p.imagen.url }}" class="producto-img">
-                {% else %}
-                    <div class="producto-img" style="display:flex;align-items:center;justify-content:center;">📷</div>
-                {% endif %}
-                
-                <div class="info-prod">
-                    <div style="font-size: 0.8rem; color: #888;">{{ p.estadoproducto }}</div>
-                    <h4 style="margin: 5px 0;">{{ p.nombreproducto }}</h4>
-                    <div class="precio-prod">${{ p.valordelbien }}</div>
-                    <a href="https://wa.me/593{{ perfil.telefonofijo }}?text=Me interesa: {{ p.nombreproducto }}" target="_blank" class="btn-contact">WhatsApp</a>
+    <div class="section-container" style="background:transparent; box-shadow:none; padding:0;">
+        <div class="galeria">
+            {% for p in ventas %}
+                <div class="producto-card">
+                    {% if p.imagen %}
+                        <img src="{{ p.imagen.url }}" class="producto-img">
+                    {% else %}
+                        <div class="producto-img" style="display:flex;align-items:center;justify-content:center;">📷</div>
+                    {% endif %}
+                    
+                    <div class="info-prod">
+                        <div style="font-size: 0.8rem; color: #888; font-weight:bold; text-transform:uppercase;">{{ p.estadoproducto }}</div>
+                        <h4 style="margin: 5px 0; color:#2c3e50;">{{ p.nombreproducto }}</h4>
+                        <div style="font-size: 1.2rem; font-weight: bold; color: #27ae60; margin: 5px 0;">${{ p.valordelbien }}</div>
+                        <a href="https://wa.me/593{{ perfil.telefonofijo }}?text=Me interesa: {{ p.nombreproducto }}" target="_blank" class="btn-whatsapp">📲 Me interesa</a>
+                    </div>
                 </div>
-            </div>
-        {% empty %}
-            <p style="text-align: center; color: #999;">No hay artículos en venta.</p>
-        {% endfor %}
+            {% empty %}
+                <p style="text-align:center; color:#999; width:100%;">No hay artículos en venta.</p>
+            {% endfor %}
+        </div>
     </div>
 </div>
 
 <script>
     function openTab(evt, tabName) {
         var i, tabcontent, tablinks;
-        
-        // Ocultar todo
         tabcontent = document.getElementsByClassName("tab-content");
         for (i = 0; i < tabcontent.length; i++) {
             tabcontent[i].style.display = "none";
             tabcontent[i].classList.remove("active");
         }
-
-        // Desactivar botones
         tablinks = document.getElementsByClassName("tab-btn");
         for (i = 0; i < tablinks.length; i++) {
             tablinks[i].className = tablinks[i].className.replace(" active", "");
         }
-
-        // Mostrar actual
-        var currentTab = document.getElementById(tabName);
-        if (currentTab) {
-            currentTab.style.display = "block";
-            setTimeout(() => { currentTab.classList.add("active"); }, 10);
-        }
-
-        // Activar botón (si el click vino de un botón)
-        if (evt && evt.currentTarget) {
+        document.getElementById(tabName).style.display = "block";
+        setTimeout(() => { document.getElementById(tabName).classList.add("active"); }, 10);
+        
+        if (evt) {
             evt.currentTarget.className += " active";
-        } else {
-            // Si llamamos a la función manualmente (como desde el botón de "Ver Experiencia")
-            // Buscamos el botón que corresponde a esa tab para pintarlo
-            for (i = 0; i < tablinks.length; i++) {
-                if (tablinks[i].getAttribute('onclick').includes(tabName)) {
-                    tablinks[i].classList.add("active");
-                }
-            }
         }
     }
 </script>
