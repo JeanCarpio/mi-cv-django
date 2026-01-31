@@ -33,12 +33,12 @@
         .db-bubble {
             position: absolute;
             border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.6); /* Un poco más blancas para que se noten los logos */
+            background-color: rgba(255, 255, 255, 0.6); 
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 12px; /* Un poco más de espacio interno */
+            padding: 12px;
             transition: transform 0.2s ease-out; 
             will-change: transform, top, left;
         }
@@ -85,11 +85,11 @@
             let mouseX = 0;
             let mouseY = 0;
 
-            // URLs DE LOS LOGOS (Oracle corregido)
+            // URLs DE LOS LOGOS (Links actualizados y más estables)
             const logos = [
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Sql_data_base_with_logo.png/1200px-Sql_data_base_with_logo.png', // SQL
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Oracle_logo.svg/512px-Oracle_logo.svg.png', // ORACLE (Versión PNG más estable)
-                'https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Postgresql_elephant.svg/1200px-Postgresql_elephant.svg.png', // PostgreSQL
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Microsoft_SQL_Server_logo_%282017%29.svg/512px-Microsoft_SQL_Server_logo_%282017%29.svg.png', // Microsoft SQL Server (Nuevo)
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Oracle_logo.svg/512px-Oracle_logo.svg.png', // ORACLE
+                'https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Postgresql_elephant.svg/512px-Postgresql_elephant.svg.png', // PostgreSQL
                 'https://upload.wikimedia.org/wikipedia/labs/8/8e/Mysql_logo.png' // MySQL
             ];
 
@@ -102,7 +102,7 @@
                     this.element = document.createElement('div');
                     this.element.classList.add('db-bubble');
                     
-                    // --- TAMAÑO CORREGIDO: Entre 70 y 85 ---
+                    // TAMAÑO: Entre 70 y 85
                     this.size = random(70, 85);
                     this.element.style.width = `${this.size}px`;
                     this.element.style.height = `${this.size}px`;
@@ -110,11 +110,13 @@
                     this.x = random(0, window.innerWidth - this.size);
                     this.y = random(0, window.innerHeight - this.size);
                     
-                    this.vx = random(-0.4, 0.4); // Velocidad suave
+                    this.vx = random(-0.4, 0.4); 
                     this.vy = random(-0.4, 0.4);
 
                     const img = document.createElement('img');
                     img.src = logos[Math.floor(Math.random() * logos.length)];
+                    // Añadimos un gestor de error por si acaso alguna imagen falla
+                    img.onerror = function() { this.style.display = 'none'; }; 
                     this.element.appendChild(img);
                     
                     container.appendChild(this.element);
