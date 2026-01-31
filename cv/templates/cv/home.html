@@ -3,107 +3,131 @@
 {% block contenido %}
 
 <style>
-    /* --- ESTILOS DE LAS PESTAÑAS (TABS) --- */
+    /* --- ESTILO TIPO NAVBAR (COMO LA REFERENCIA) --- */
     
-    /* Contenedor del menú de pestañas */
     .tabs-nav {
+        background-color: #1f2a30; /* Fondo oscuro como la barra de navegación */
+        padding: 15px;
+        border-radius: 10px;
         display: flex;
         justify-content: center;
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 15px;
         margin-bottom: 30px;
-        border-bottom: 2px solid #eee;
-        padding-bottom: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
-    /* Botones de las pestañas */
     .tab-btn {
         background-color: transparent;
         border: none;
-        padding: 10px 20px;
-        font-family: 'Helvetica', 'Arial', sans-serif;
+        font-family: 'Segoe UI', sans-serif;
         font-size: 14px;
-        font-weight: bold;
-        color: #7f8c8d;
+        font-weight: 600;
+        color: #bdc3c7; /* Color gris claro */
         cursor: pointer;
         transition: all 0.3s ease;
-        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        position: relative;
     }
 
+    /* Efecto Hover */
     .tab-btn:hover {
-        background-color: #f0f2f5;
-        color: #1f2a30;
-    }
-
-    /* Estilo para la pestaña activa */
-    .tab-btn.active {
-        background-color: #1f2a30; /* Azul oscuro */
         color: white;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
 
-    /* --- SECCIONES DE CONTENIDO --- */
+    /* La pestaña activa se pone blanca y brillante */
+    .tab-btn.active {
+        color: #3498db; /* Un azul brillante o blanco según prefieras */
+        font-weight: bold;
+    }
+    
+    /* Línea debajo de la activa */
+    .tab-btn.active::after {
+        content: '';
+        display: block;
+        width: 100%;
+        height: 2px;
+        background-color: #3498db;
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+    }
+
+    /* --- CONTENIDO --- */
     .tab-content {
-        display: none; /* Por defecto ocultas */
-        animation: fadeIn 0.5s ease;
+        display: none;
+        animation: slideUp 0.4s ease;
     }
 
-    /* La clase que muestra el contenido */
     .tab-content.active {
         display: block;
     }
 
-    /* Animación suave */
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
     }
 
-    /* --- ESTILOS GENERALES (Que ya tenías) --- */
+    /* --- ESTILOS GENERALES --- */
     .header-name {
-        font-family: 'Helvetica', 'Arial', sans-serif;
-        font-size: 42px; 
-        font-weight: bold;
+        font-size: 48px; 
+        font-weight: 800;
         color: #1f2a30;
-        text-transform: uppercase;
-        line-height: 1;
-        margin-bottom: 5px;
-        text-align: center; /* Centrado para el Inicio */
+        text-align: center;
+        margin-bottom: 10px;
     }
 
     .header-desc {
-        font-family: 'Helvetica', 'Arial', sans-serif;
-        font-size: 18px;
-        color: #7f8c8d;
-        margin-bottom: 30px;
-        font-weight: normal;
+        font-size: 20px;
+        color: #3498db; /* Azul para el subtítulo */
         text-align: center;
+        margin-bottom: 40px;
+        font-weight: 500;
     }
 
-    /* Estilos de bloques (Experiencia, Cursos, etc.) */
-    .section-title {
-        font-family: 'Helvetica', 'Arial', sans-serif;
-        font-size: 18px;
-        font-weight: bold;
-        color: #1f2a30;
-        border-left: 4px solid #e74c3c; /* Detalle rojo a la izquierda */
-        padding-left: 10px;
-        margin-bottom: 25px;
-        text-transform: uppercase;
-    }
-
+    /* Estilos de Items (Experiencia, Cursos) */
     .item-block {
-        margin-bottom: 25px; 
-        border-bottom: 1px solid #f0f0f0; 
-        padding-bottom: 15px;
+        background: white;
+        border-left: 5px solid #3498db;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        border-radius: 0 10px 10px 0;
     }
-    .item-block:last-child { border-bottom: none; }
 
-    .line-date { color: #e74c3c; font-weight: bold; font-size: 13px; margin-bottom: 5px; display: block; }
-    .line-title { font-size: 16px; font-weight: bold; color: #2c3e50; margin-bottom: 3px; display: block; }
-    .line-company { font-size: 14px; font-weight: bold; color: #666; margin-bottom: 8px; display: block; }
-    .line-desc { color: #444; font-size: 14px; line-height: 1.5; text-align: justify; display: block; }
-    .empty-msg { color: #999; font-style: italic; font-size: 13px; text-align: center; }
+    .line-date { color: #7f8c8d; font-size: 12px; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; }
+    .line-title { font-size: 18px; font-weight: bold; color: #2c3e50; margin-bottom: 5px; }
+    .line-company { font-size: 14px; font-weight: 600; color: #3498db; margin-bottom: 10px; }
+    .line-desc { color: #555; font-size: 14px; line-height: 1.6; }
+
+    /* --- ESTILOS ESPECIFICOS PARA GARAGE (TARJETAS) --- */
+    .galeria {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+    }
+
+    .producto-card {
+        width: 250px;
+        border: 1px solid #eee;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        background: white;
+        transition: transform 0.2s;
+    }
+    .producto-card:hover { transform: translateY(-5px); }
+    
+    .producto-img { width: 100%; height: 160px; object-fit: cover; background: #f9f9f9; }
+    
+    .info-prod { padding: 15px; }
+    .precio-prod { font-size: 1.2rem; font-weight: bold; color: #27ae60; margin: 10px 0; }
+    .btn-contact {
+        display: block; width: 100%; background-color: #25D366; color: white;
+        text-align: center; padding: 8px 0; border-radius: 5px; text-decoration: none; font-weight: bold;
+    }
 
 </style>
 
@@ -111,112 +135,158 @@
     <button class="tab-btn active" onclick="openTab(event, 'inicio')">Inicio</button>
     <button class="tab-btn" onclick="openTab(event, 'experiencia')">Experiencia</button>
     <button class="tab-btn" onclick="openTab(event, 'cursos')">Cursos</button>
+    <button class="tab-btn" onclick="openTab(event, 'reconocimientos')">Reconocimientos</button>
     <button class="tab-btn" onclick="openTab(event, 'academicos')">Académicos</button>
     <button class="tab-btn" onclick="openTab(event, 'laborales')">Laborales</button>
+    <button class="tab-btn" onclick="openTab(event, 'garage')">Garage 🛒</button>
 </div>
 
 <div id="inicio" class="tab-content active">
-    <div style="padding: 40px 0;">
-        <div class="header-name">{{ perfil.nombres }}<br>{{ perfil.apellidos }}</div>
+    <div style="padding: 20px 0; text-align: center;">
+        <div class="header-name">{{ perfil.nombres }} {{ perfil.apellidos }}</div>
         <div class="header-desc">{{ perfil.descripcionperfil }}</div>
         
-        <div style="text-align: center; margin-top: 30px;">
-            <p style="color: #666; max-width: 600px; margin: 0 auto; line-height: 1.6;">
-                Bienvenido a mi hoja de vida digital. Navega por las pestañas de arriba para conocer en detalle mi trayectoria profesional, formación académica y proyectos destacados.
-            </p>
+        <p style="color: #666; max-width: 700px; margin: 0 auto; line-height: 1.8; font-size: 16px;">
+            Bienvenido a mi portafolio profesional interactivo. 
+            Utiliza la barra de navegación superior para explorar mi trayectoria, 
+            ver mis certificaciones o visitar mi tienda personal.
+        </p>
+        
+        <div style="margin-top: 40px;">
+            <button onclick="openTab(event, 'experiencia')" style="background: #3498db; color: white; border: none; padding: 12px 30px; border-radius: 50px; font-weight: bold; cursor: pointer;">
+                Ver mi Experiencia
+            </button>
         </div>
     </div>
 </div>
 
 <div id="experiencia" class="tab-content">
-    <div class="section-title">Experiencia Laboral</div>
+    <h3 style="color:#1f2a30; margin-bottom: 20px;">Trayectoria Profesional</h3>
     {% for e in experiencias %}
         <div class="item-block">
-            <div class="line-date">
-                {{ e.fechainiciogestion|date:"Y" }} - {{ e.fechafingestion|date:"Y" }}
-            </div>
+            <div class="line-date">{{ e.fechainiciogestion|date:"Y" }} - {{ e.fechafingestion|date:"Y" }}</div>
             <div class="line-title">{{ e.cargodesempenado }}</div>
             <div class="line-company">{{ e.nombrempresa }}</div>
             <div class="line-desc">{{ e.descripcionfunciones }}</div>
         </div>
     {% empty %}
-        <p class="empty-msg">Sin experiencia registrada.</p>
+        <p style="text-align: center; color: #999;">Sin experiencia registrada.</p>
     {% endfor %}
 </div>
 
 <div id="cursos" class="tab-content">
-    <div class="section-title">Cursos Realizados</div>
+    <h3 style="color:#1f2a30; margin-bottom: 20px;">Formación Continua</h3>
     {% for c in cursos %}
-        <div class="item-block">
+        <div class="item-block" style="border-left-color: #27ae60;">
             <div class="line-title">{{ c.nombrecurso }}</div>
-            <div class="line-company">
-                {% if c.totalhoras %}
-                    <span style="font-weight: normal; color: #888; font-size: 13px;">
-                        — {{ c.totalhoras }} Horas
-                    </span>
-                {% endif %}
-            </div>
+            <div class="line-company">{{ c.entidadpatrocinadora }} {% if c.totalhoras %}({{ c.totalhoras }}h){% endif %}</div>
             <div class="line-desc">{{ c.descripcioncurso }}</div>
         </div>
     {% empty %}
-        <p class="empty-msg">No hay cursos registrados.</p>
+        <p style="text-align: center; color: #999;">No hay cursos registrados.</p>
+    {% endfor %}
+</div>
+
+<div id="reconocimientos" class="tab-content">
+    <h3 style="color:#1f2a30; margin-bottom: 20px;">Logros y Reconocimientos</h3>
+    {% for r in reconocimientos %}
+        <div class="item-block" style="border-left-color: #f1c40f;">
+            <div class="line-date">{{ r.fechareconocimiento|date:"d M Y" }}</div>
+            <div class="line-title">{{ r.tiporeconocimiento }}</div>
+            <div class="line-company">{{ r.entidadpatrocinadora }}</div>
+            <div class="line-desc">{{ r.descripcionreconocimiento }}</div>
+        </div>
+    {% empty %}
+        <p style="text-align: center; color: #999;">No hay reconocimientos registrados.</p>
     {% endfor %}
 </div>
 
 <div id="academicos" class="tab-content">
-    <div class="section-title">Productos Académicos</div>
-    {% if productos_academicos %}
-        {% for p in productos_academicos %}
-            <div class="item-block">
-                <div class="line-title">{{ p.nombrerecurso }}</div>
-                {% if p.clasificador %}
-                    <div class="line-company">{{ p.clasificador }}</div>
-                {% endif %}
-                <div class="line-desc">{{ p.descripcion }}</div>
-            </div>
-        {% endfor %}
-    {% else %}
-        <p class="empty-msg">No hay productos académicos registrados.</p>
-    {% endif %}
+    <h3 style="color:#1f2a30; margin-bottom: 20px;">Producción Académica</h3>
+    {% for p in productos_academicos %}
+        <div class="item-block" style="border-left-color: #8e44ad;">
+            <div class="line-title">{{ p.nombrerecurso }}</div>
+            <div class="line-company">{{ p.clasificador }}</div>
+            <div class="line-desc">{{ p.descripcion }}</div>
+        </div>
+    {% empty %}
+         <p style="text-align: center; color: #999;">No hay registros.</p>
+    {% endfor %}
 </div>
 
 <div id="laborales" class="tab-content">
-    <div class="section-title">Productos Laborales</div>
-    {% if productos_laborales %}
-        {% for p in productos_laborales %}
-            <div class="item-block">
-                <div class="line-date" style="color:#999;">
-                    {{ p.fechaproducto|date:"M Y" }}
+    <h3 style="color:#1f2a30; margin-bottom: 20px;">Portafolio Laboral</h3>
+    {% for p in productos_laborales %}
+        <div class="item-block" style="border-left-color: #e67e22;">
+            <div class="line-date">{{ p.fechaproducto|date:"M Y" }}</div>
+            <div class="line-title">{{ p.nombreproducto }}</div>
+            <div class="line-desc">{{ p.descripcion }}</div>
+        </div>
+    {% empty %}
+         <p style="text-align: center; color: #999;">No hay registros.</p>
+    {% endfor %}
+</div>
+
+<div id="garage" class="tab-content">
+    <h3 style="color:#1f2a30; margin-bottom: 20px; text-align: center;">Venta de Garage</h3>
+    <div class="galeria">
+        {% for p in ventas %}
+            <div class="producto-card">
+                {% if p.imagen %}
+                    <img src="{{ p.imagen.url }}" class="producto-img">
+                {% else %}
+                    <div class="producto-img" style="display:flex;align-items:center;justify-content:center;">📷</div>
+                {% endif %}
+                
+                <div class="info-prod">
+                    <div style="font-size: 0.8rem; color: #888;">{{ p.estadoproducto }}</div>
+                    <h4 style="margin: 5px 0;">{{ p.nombreproducto }}</h4>
+                    <div class="precio-prod">${{ p.valordelbien }}</div>
+                    <a href="https://wa.me/593{{ perfil.telefonofijo }}?text=Me interesa: {{ p.nombreproducto }}" target="_blank" class="btn-contact">WhatsApp</a>
                 </div>
-                <div class="line-title">{{ p.nombreproducto }}</div>
-                <div class="line-desc">{{ p.descripcion }}</div>
             </div>
+        {% empty %}
+            <p style="text-align: center; color: #999;">No hay artículos en venta.</p>
         {% endfor %}
-    {% else %}
-        <p class="empty-msg">No hay productos laborales registrados.</p>
-    {% endif %}
+    </div>
 </div>
 
 <script>
     function openTab(evt, tabName) {
-        // 1. Ocultar todos los contenidos con clase "tab-content"
         var i, tabcontent, tablinks;
+        
+        // Ocultar todo
         tabcontent = document.getElementsByClassName("tab-content");
         for (i = 0; i < tabcontent.length; i++) {
             tabcontent[i].style.display = "none";
             tabcontent[i].classList.remove("active");
         }
 
-        // 2. Quitar la clase "active" de todos los botones
+        // Desactivar botones
         tablinks = document.getElementsByClassName("tab-btn");
         for (i = 0; i < tablinks.length; i++) {
             tablinks[i].className = tablinks[i].className.replace(" active", "");
         }
 
-        // 3. Mostrar la pestaña actual y añadir "active" al botón que se clickeó
-        document.getElementById(tabName).style.display = "block";
-        document.getElementById(tabName).classList.add("active");
-        evt.currentTarget.className += " active";
+        // Mostrar actual
+        var currentTab = document.getElementById(tabName);
+        if (currentTab) {
+            currentTab.style.display = "block";
+            setTimeout(() => { currentTab.classList.add("active"); }, 10);
+        }
+
+        // Activar botón (si el click vino de un botón)
+        if (evt && evt.currentTarget) {
+            evt.currentTarget.className += " active";
+        } else {
+            // Si llamamos a la función manualmente (como desde el botón de "Ver Experiencia")
+            // Buscamos el botón que corresponde a esa tab para pintarlo
+            for (i = 0; i < tablinks.length; i++) {
+                if (tablinks[i].getAttribute('onclick').includes(tabName)) {
+                    tablinks[i].classList.add("active");
+                }
+            }
+        }
     }
 </script>
 
