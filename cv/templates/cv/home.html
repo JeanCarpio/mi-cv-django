@@ -78,19 +78,19 @@
     .profile-name { font-size: 3rem; font-weight: 800; color: #1f2a30; line-height: 1.1; margin-bottom: 10px; }
     .profile-desc { font-size: 1.2rem; color: #3498db; font-weight: 500; margin-bottom: 30px; }
     
-    /* DATOS PERSONALES ACTUALIZADOS */
+    /* DATOS PERSONALES */
     .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
     
     .data-item { font-size: 0.95rem; color: #555; display: flex; align-items: center; gap: 8px; }
     
-    /* Etiqueta (Ej: Nacionalidad:) */
+    /* Etiqueta en negrita */
     .data-item b { color: #1f2a30; font-weight: 700; margin-right: 3px; }
 
-    /* TRUCO PARA EMOJIS AZULES */
+    /* --- CORRECCIÓN EMOJIS: COLORES ORIGINALES --- */
     .icon { 
-        color: transparent;  /* Ocultamos el color original del emoji */
-        text-shadow: 0 0 0 #3498db; /* Pintamos la silueta de azul */
-        font-size: 1.1rem; 
+        /* Quitamos el truco de color transparente y text-shadow */
+        font-size: 1.3rem; /* Un poquito más grandes para que se luzcan */
+        vertical-align: middle;
     }
     
     .data-link { color: #555; text-decoration: none; transition: color 0.2s; }
@@ -219,7 +219,7 @@
                 </div>
 
                 <div class="data-item">
-                    <span class="icon">🏳</span> <b>Nacionalidad:</b>
+                    <span class="icon">🏳️</span> <b>Nacionalidad:</b>
                     <span>{{ perfil.nacionalidad }}</span>
                 </div>
 
